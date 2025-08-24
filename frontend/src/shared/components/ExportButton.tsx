@@ -66,14 +66,15 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
           <Button 
             variant="outline" 
             disabled={isDisabled}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 text-sm sm:text-base"
           >
             {isExporting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Download className="h-4 w-4" />
             )}
-            {isExporting ? 'Exporting...' : 'Export'}
+            <span className="hidden sm:inline">{isExporting ? 'Exporting...' : 'Export'}</span>
+            <span className="sm:hidden">{isExporting ? '...' : 'Export'}</span>
           </Button>
         </DropdownMenuTrigger>
         
@@ -100,18 +101,18 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
 
       {/* Status Messages */}
       {exportStatus === 'success' && (
-        <Alert className="absolute top-12 right-0 w-64 z-10 border-green-200 bg-green-50">
-          <CheckCircle className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-800">
+        <Alert className="absolute top-12 right-0 w-48 sm:w-64 z-10 border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
+          <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+          <AlertDescription className="text-green-800 dark:text-green-200 text-xs sm:text-sm">
             Export completed successfully!
           </AlertDescription>
         </Alert>
       )}
 
       {exportStatus === 'error' && (
-        <Alert className="absolute top-12 right-0 w-64 z-10 border-red-200 bg-red-50">
-          <AlertCircle className="h-4 w-4 text-red-600" />
-          <AlertDescription className="text-red-800">
+        <Alert className="absolute top-12 right-0 w-48 sm:w-64 z-10 border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950">
+          <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
+          <AlertDescription className="text-red-800 dark:text-red-200 text-xs sm:text-sm">
             {errorMessage}
           </AlertDescription>
         </Alert>
@@ -119,7 +120,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
 
       {/* Tooltip for disabled state */}
       {!isDataValid && (
-        <div className="absolute top-12 right-0 w-48 p-2 bg-gray-800 text-white text-xs rounded shadow-lg z-10">
+        <div className="absolute top-12 right-0 w-40 sm:w-48 p-2 bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-800 text-xs rounded shadow-lg z-10">
           No data available to export
         </div>
       )}

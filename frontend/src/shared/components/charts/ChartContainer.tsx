@@ -26,13 +26,13 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
     return (
       <Card className={className}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Icon className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
             {title}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Skeleton className="h-[300px] w-full" />
+          <Skeleton className="h-[250px] sm:h-[300px] w-full" />
         </CardContent>
       </Card>
     );
@@ -42,13 +42,13 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
     return (
       <Card className={className}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Icon className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
             {title}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+          <div className="flex items-center justify-center h-[250px] sm:h-[300px] text-muted-foreground">
             {emptyMessage}
           </div>
         </CardContent>
@@ -59,8 +59,8 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Icon className="h-5 w-5" />
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
           {title}
         </CardTitle>
       </CardHeader>

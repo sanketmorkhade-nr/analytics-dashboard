@@ -52,11 +52,11 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-lg text-muted-foreground">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-base sm:text-lg text-muted-foreground">
           Overview of usage analytics and trends
         </p>
       </div>
@@ -65,7 +65,7 @@ const Dashboard: React.FC = () => {
       <MetricsGrid metrics={metrics} loading={loading} />
 
       {/* Top Users and Endpoints Insights */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2">
         <TopUsersInsights 
           data={activeUsers} 
           loading={activeUsersLoading} 
@@ -77,7 +77,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Top Events Chart and Top Companies Chart */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2">
         <TopEventsChart 
           data={topEvents} 
           loading={topEventsLoading} 
@@ -89,7 +89,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Time Period Filter and Chart Type Toggle */}
-      <div className="flex justify-end items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
         <div className="flex items-center gap-1 border rounded-md p-1">
           <Button
             variant={chartType === 'line' ? 'default' : 'ghost'}
@@ -132,22 +132,25 @@ const Dashboard: React.FC = () => {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <Skeleton className="h-[400px] w-full" />
+            <Skeleton className="h-[300px] sm:h-[400px] w-full" />
           ) : !trendsData || trendsData.length === 0 ? (
-            <div className="flex items-center justify-center h-[400px] text-muted-foreground">
+            <div className="flex items-center justify-center h-[300px] sm:h-[400px] text-muted-foreground">
               No data available for the selected time period
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height={400}>
+            <ResponsiveContainer width="100%" height={300} className="sm:h-[400px]">
               {chartType === 'line' ? (
                 <LineChart data={trendsData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="timestamp" 
                     tickFormatter={formatDate}
-                    tick={{ fontSize: 14 }}
+                    tick={{ fontSize: 12 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
                   />
-                  <YAxis tick={{ fontSize: 14 }} />
+                  <YAxis tick={{ fontSize: 12 }} />
                   <Tooltip 
                     labelFormatter={formatTooltipDate}
                     formatter={(value: number) => [value.toLocaleString(), 'Events']}
@@ -158,8 +161,8 @@ const Dashboard: React.FC = () => {
                     dataKey="value" 
                     stroke="#8884d8" 
                     strokeWidth={2}
-                    dot={{ r: 4 }}
-                    activeDot={{ r: 6 }}
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 5 }}
                   />
                 </LineChart>
               ) : (
@@ -168,9 +171,12 @@ const Dashboard: React.FC = () => {
                   <XAxis 
                     dataKey="timestamp" 
                     tickFormatter={formatDate}
-                    tick={{ fontSize: 14 }}
+                    tick={{ fontSize: 12 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
                   />
-                  <YAxis tick={{ fontSize: 14 }} />
+                  <YAxis tick={{ fontSize: 12 }} />
                   <Tooltip 
                     labelFormatter={formatTooltipDate}
                     formatter={(value: number) => [value.toLocaleString(), 'Events']}
@@ -186,21 +192,21 @@ const Dashboard: React.FC = () => {
 
       {/* Summary Statistics */}
       {trendsData && trendsData.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card>
             <CardContent className="p-4">
-              <div className="text-3xl font-bold">
+              <div className="text-2xl sm:text-3xl font-bold">
                 {Math.round(trendsData.reduce((sum, item) => sum + item.value, 0) / trendsData.length)}
               </div>
-              <div className="text-base text-muted-foreground">Average per Period</div>
+              <div className="text-sm sm:text-base text-muted-foreground">Average per Period</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4">
-              <div className="text-3xl font-bold">
+              <div className="text-2xl sm:text-3xl font-bold">
                 {Math.max(...trendsData.map(item => item.value))}
               </div>
-              <div className="text-base text-muted-foreground">Peak Events</div>
+              <div className="text-sm sm:text-base text-muted-foreground">Peak Events</div>
             </CardContent>
           </Card>
         </div>

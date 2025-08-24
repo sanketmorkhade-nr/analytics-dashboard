@@ -89,11 +89,11 @@ const EventExplorerPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Event Explorer</h1>
-        <p className="text-lg text-muted-foreground">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Event Explorer</h1>
+        <p className="text-base sm:text-lg text-muted-foreground">
           Search and explore usage events with advanced filtering
         </p>
       </div>
@@ -122,12 +122,12 @@ const EventExplorerPage: React.FC = () => {
 
       {/* Events Metrics */}
       {metricsLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="h-32 bg-muted animate-pulse rounded-lg" />
-          <div className="h-32 bg-muted animate-pulse rounded-lg" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div className="h-24 sm:h-32 bg-muted animate-pulse rounded-lg" />
+          <div className="h-24 sm:h-32 bg-muted animate-pulse rounded-lg" />
         </div>
       ) : metrics && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <MetricsCard 
             title="Total Events" 
             value={metrics.totalEvents || 0} 
@@ -183,22 +183,25 @@ const EventExplorerPage: React.FC = () => {
         </CardHeader>
         <CardContent>
           {chartLoading ? (
-            <Skeleton className="h-[400px] w-full" />
+            <Skeleton className="h-[300px] sm:h-[400px] w-full" />
           ) : !chartData || chartData.length === 0 ? (
-            <div className="flex items-center justify-center h-[400px] text-muted-foreground">
+            <div className="flex items-center justify-center h-[300px] sm:h-[400px] text-muted-foreground">
               No data available for the selected filters
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height={400}>
+            <ResponsiveContainer width="100%" height={300} className="sm:h-[400px]">
               {chartType === 'line' ? (
                 <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="timestamp" 
                     tickFormatter={formatDate}
-                    tick={{ fontSize: 14 }}
+                    tick={{ fontSize: 12 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
                   />
-                  <YAxis tick={{ fontSize: 14 }} />
+                  <YAxis tick={{ fontSize: 12 }} />
                   <Tooltip 
                     labelFormatter={formatTooltipDate}
                     formatter={(value: number, name: string) => [value.toLocaleString(), name]}
@@ -213,8 +216,8 @@ const EventExplorerPage: React.FC = () => {
                         dataKey={company.name} 
                         stroke={companyColors[index % companyColors.length]} 
                         strokeWidth={2}
-                        dot={{ r: 4 }}
-                        activeDot={{ r: 6 }}
+                        dot={{ r: 3 }}
+                        activeDot={{ r: 5 }}
                         name={company.name}
                       />
                     ))}
@@ -225,9 +228,12 @@ const EventExplorerPage: React.FC = () => {
                   <XAxis 
                     dataKey="timestamp" 
                     tickFormatter={formatDate}
-                    tick={{ fontSize: 14 }}
+                    tick={{ fontSize: 12 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
                   />
-                  <YAxis tick={{ fontSize: 14 }} />
+                  <YAxis tick={{ fontSize: 12 }} />
                   <Tooltip 
                     labelFormatter={formatTooltipDate}
                     formatter={(value: number, name: string) => [value.toLocaleString(), name]}
@@ -252,7 +258,8 @@ const EventExplorerPage: React.FC = () => {
                     cy="50%"
                     labelLine={false}
                     label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(1)}%`}
-                    outerRadius={120}
+                    outerRadius={80}
+                    className="sm:outerRadius={120}"
                     fill="#8884d8"
                     dataKey="value"
                   >

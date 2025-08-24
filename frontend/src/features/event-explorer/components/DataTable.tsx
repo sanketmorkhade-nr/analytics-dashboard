@@ -62,13 +62,13 @@ const DataTable: React.FC<DataTableProps> = ({
     return (
       <div className="space-y-4">
         {/* Table Heading with Search */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <TableIcon className="h-5 w-5 text-primary" />
             <h3 className="text-lg font-semibold">Usage Events</h3>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="relative w-80">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+            <div className="relative w-full sm:w-80">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
               <Input
                 placeholder="Search by company name, user email, or endpoint..."
@@ -92,15 +92,15 @@ const DataTable: React.FC<DataTableProps> = ({
           </div>
         </div>
         
-        <div className="rounded-md border">
+        <div className="rounded-md border overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="px-6 py-4 font-bold">Company</TableHead>
-                <TableHead className="px-6 py-4 font-bold">User</TableHead>
-                <TableHead className="px-6 py-4 font-bold">Endpoint</TableHead>
-                <TableHead className="px-6 py-4 font-bold">Timestamp</TableHead>
-                <TableHead className="px-6 py-4 text-right font-bold">Value</TableHead>
+                <TableHead className="px-6 py-4 font-bold whitespace-nowrap">Company</TableHead>
+                <TableHead className="px-6 py-4 font-bold whitespace-nowrap">User</TableHead>
+                <TableHead className="px-6 py-4 font-bold whitespace-nowrap">Endpoint</TableHead>
+                <TableHead className="px-6 py-4 font-bold whitespace-nowrap">Timestamp</TableHead>
+                <TableHead className="px-6 py-4 text-right font-bold whitespace-nowrap">Value</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -134,13 +134,13 @@ const DataTable: React.FC<DataTableProps> = ({
     return (
       <div className="space-y-4">
         {/* Table Heading with Search */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <TableIcon className="h-5 w-5 text-primary" />
             <h3 className="text-lg font-semibold">Usage Events</h3>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="relative w-80">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+            <div className="relative w-full sm:w-80">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
               <Input
                 placeholder="Search by company name, user email, or endpoint..."
@@ -178,13 +178,13 @@ const DataTable: React.FC<DataTableProps> = ({
   return (
     <div className="space-y-4">
       {/* Table Heading with Search */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <TableIcon className="h-5 w-5 text-primary" />
           <h3 className="text-lg font-semibold">Usage Events</h3>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="relative w-80">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+          <div className="relative w-full sm:w-80">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
             <Input
               placeholder="Search by company name, user email, or endpoint..."
@@ -210,33 +210,33 @@ const DataTable: React.FC<DataTableProps> = ({
         </div>
       </div>
       
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="px-6 py-4 font-bold">Company</TableHead>
-              <TableHead className="px-6 py-4 font-bold">User</TableHead>
-              <TableHead className="px-6 py-4 font-bold">Endpoint</TableHead>
-              <TableHead className="px-6 py-4 font-bold">Timestamp</TableHead>
-              <TableHead className="px-6 py-4 text-right font-bold">Value</TableHead>
+              <TableHead className="px-6 py-4 font-bold whitespace-nowrap">Company</TableHead>
+              <TableHead className="px-6 py-4 font-bold whitespace-nowrap">User</TableHead>
+              <TableHead className="px-6 py-4 font-bold whitespace-nowrap">Endpoint</TableHead>
+              <TableHead className="px-6 py-4 font-bold whitespace-nowrap">Timestamp</TableHead>
+              <TableHead className="px-6 py-4 text-right font-bold whitespace-nowrap">Value</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {events.map((event) => (
-              <TableRow key={event.id} className="hover:bg-muted/50">
-                <TableCell className="px-6 py-4 font-medium text-base">
+              <TableRow key={event.id} className="hover:bg-muted/50 transition-colors">
+                <TableCell className="px-6 py-4 font-medium text-base whitespace-nowrap">
                   {event.companyName || 'N/A'}
                 </TableCell>
-                <TableCell className="px-6 py-4 text-base text-muted-foreground">
+                <TableCell className="px-6 py-4 text-base text-muted-foreground whitespace-nowrap">
                   {event.user || 'N/A'}
                 </TableCell>
-                <TableCell className="px-6 py-4 font-mono text-base">
+                <TableCell className="px-6 py-4 font-mono text-base whitespace-nowrap">
                   {event.endpoint || 'N/A'}
                 </TableCell>
-                <TableCell className="px-6 py-4 font-mono text-base">
+                <TableCell className="px-6 py-4 font-mono text-base whitespace-nowrap">
                   {event.created_at ? formatDate(event.created_at) : 'N/A'}
                 </TableCell>
-                <TableCell className="px-6 py-4 text-right">
+                <TableCell className="px-6 py-4 text-right whitespace-nowrap">
                   {event.value !== undefined && event.value !== null ? (
                     <span className="font-mono text-base">
                       {event.value.toLocaleString()}
@@ -253,14 +253,14 @@ const DataTable: React.FC<DataTableProps> = ({
 
       {/* Pagination */}
       {pagination && (
-        <div className="flex items-center justify-between">
-          <div className="text-base text-muted-foreground whitespace-nowrap">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="text-sm sm:text-base text-muted-foreground whitespace-nowrap">
             Showing {((pagination.currentPage - 1) * pagination.pageSize) + 1} to{' '}
             {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalItems)} of{' '}
             {pagination.totalItems} results
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
@@ -300,7 +300,7 @@ const DataTable: React.FC<DataTableProps> = ({
             
             {onPageSizeChange && (
               <div className="flex items-center gap-2">
-                <span className="text-base text-muted-foreground whitespace-nowrap">Items per page:</span>
+                <span className="text-sm sm:text-base text-muted-foreground whitespace-nowrap">Items per page:</span>
                 <Select
                   value={pagination.pageSize.toString()}
                   onValueChange={(value) => onPageSizeChange(parseInt(value))}

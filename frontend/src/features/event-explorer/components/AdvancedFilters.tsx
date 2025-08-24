@@ -166,7 +166,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ filters, onFiltersCha
         <h3 className="text-lg font-semibold">Filters</h3>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label htmlFor="companies">Companies</Label>
           <Popover open={companySelectOpen} onOpenChange={setCompanySelectOpen}>
@@ -255,7 +255,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ filters, onFiltersCha
                 <Badge
                   key={companyName}
                   variant="secondary"
-                  className="text-xs cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
+                  className="text-xs cursor-pointer hover:bg-destructive hover:text-destructive-foreground transition-colors"
                   onClick={() => handleCompanyToggle(companyName)}
                 >
                   {companyName}
@@ -281,9 +281,9 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ filters, onFiltersCha
         />
       </div>
       
-      <div className="flex justify-end gap-2">
+      <div className="flex flex-col sm:flex-row justify-end gap-2">
         {hasActiveFilters && (
-          <Button variant="outline" onClick={handleClearFilters} className="gap-2 text-base">
+          <Button variant="outline" onClick={handleClearFilters} className="gap-2 text-base order-2 sm:order-1">
             <X className="h-5 w-5" />
             Clear Filters
           </Button>
@@ -291,7 +291,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ filters, onFiltersCha
         <Button 
           onClick={handleApplyFilters} 
           disabled={isApplyDisabled}
-          className="gap-2 text-base"
+          className="gap-2 text-base order-1 sm:order-2"
         >
           <Filter className="h-5 w-5" />
           Apply Filters

@@ -65,3 +65,8 @@ dist/
 *.backup
 *.old
 *.orig
+
+
+.cursor/
+docs/cursor_default_rules.txt
+prompt

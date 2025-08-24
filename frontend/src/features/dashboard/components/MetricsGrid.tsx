@@ -11,9 +11,9 @@ interface MetricsGridProps {
 const MetricsGrid: React.FC<MetricsGridProps> = ({ metrics, loading = false }) => {
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         {[...Array(2)].map((_, index) => (
-          <div key={index} className="h-32 bg-muted animate-pulse rounded-lg" />
+          <div key={index} className="h-24 sm:h-32 bg-muted animate-pulse rounded-lg" />
         ))}
       </div>
     );
@@ -21,7 +21,7 @@ const MetricsGrid: React.FC<MetricsGridProps> = ({ metrics, loading = false }) =
 
   if (!metrics) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <MetricsCard title="Total Events" value={0} icon={<Activity className="h-5 w-5 text-blue-500" />} />
         <MetricsCard title="Active Companies" value={0} icon={<Users className="h-5 w-5 text-green-500" />} />
       </div>
@@ -29,7 +29,7 @@ const MetricsGrid: React.FC<MetricsGridProps> = ({ metrics, loading = false }) =
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
       <MetricsCard 
         title="Total Events" 
         value={metrics.totalEvents} 

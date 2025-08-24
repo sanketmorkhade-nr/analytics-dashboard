@@ -15,13 +15,13 @@ const TopCompaniesChart: React.FC<TopCompaniesChartProps> = ({ data, loading }) 
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Building className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Building className="h-4 w-4 sm:h-5 sm:w-5" />
             Top 5 Most Active Companies
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Skeleton className="h-[300px] w-full" />
+          <Skeleton className="h-[250px] sm:h-[300px] w-full" />
         </CardContent>
       </Card>
     );
@@ -31,13 +31,13 @@ const TopCompaniesChart: React.FC<TopCompaniesChartProps> = ({ data, loading }) 
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Building className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Building className="h-4 w-4 sm:h-5 sm:w-5" />
             Top 5 Most Active Companies
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+          <div className="flex items-center justify-center h-[250px] sm:h-[300px] text-muted-foreground">
             No company data available
           </div>
         </CardContent>
@@ -58,23 +58,23 @@ const TopCompaniesChart: React.FC<TopCompaniesChartProps> = ({ data, loading }) 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Building className="h-5 w-5" />
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+          <Building className="h-4 w-4 sm:h-5 sm:w-5" />
           Top 5 Most Active Companies
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={250} className="sm:h-[300px]">
           <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis 
               dataKey="name" 
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 10 }}
               angle={-45}
               textAnchor="end"
-              height={80}
+              height={60}
             />
-            <YAxis tick={{ fontSize: 12 }} />
+            <YAxis tick={{ fontSize: 10 }} />
             <Tooltip 
               formatter={(value: number, name: string) => [
                 value.toLocaleString(), 
