@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"analytics-dashboard/internal/api/handlers"
-	"analytics-dashboard/internal/config"
-	"analytics-dashboard/internal/services"
+	"analytics-dashboard/pkg/api/handlers"
+	"analytics-dashboard/pkg/config"
+	"analytics-dashboard/pkg/services"
 
 	"github.com/gin-gonic/gin"
 )

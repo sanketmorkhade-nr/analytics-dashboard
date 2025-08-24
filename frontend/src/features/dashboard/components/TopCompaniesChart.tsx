@@ -1,8 +1,11 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Building } from 'lucide-react';
+import { useChartTheme } from '@/shared/hooks/useChartTheme';
+import { ChartTooltip } from '@/shared/components/charts/ChartTooltip';
+import { ChartXAxis, ChartYAxis } from '@/shared/components/charts/ChartAxis';
 import type { CompanyActivity } from '@/shared/types/api';
 
 interface TopCompaniesChartProps {
@@ -11,6 +14,8 @@ interface TopCompaniesChartProps {
 }
 
 const TopCompaniesChart: React.FC<TopCompaniesChartProps> = ({ data, loading }) => {
+  const chartColors = useChartTheme();
+
   if (loading) {
     return (
       <Card>
@@ -66,23 +71,24 @@ const TopCompaniesChart: React.FC<TopCompaniesChartProps> = ({ data, loading }) 
       <CardContent>
         <ResponsiveContainer width="100%" height={250} className="sm:h-[300px]">
           <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis 
-              dataKey="name" 
-              tick={{ fontSize: 10 }}
-              angle={-45}
-              textAnchor="end"
+            <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
+            <ChartXAxis 
+              chartColors={chartColors}
+              xAxisDataKey="name"
+              fontSize={10}
               height={60}
             />
-            <YAxis tick={{ fontSize: 10 }} />
-            <Tooltip 
-              formatter={(value: number, name: string) => [
-                value.toLocaleString(), 
-                name === 'events' ? 'Events' : name === 'users' ? 'Users' : name === 'endpoints' ? 'Endpoints' : name
-              ]}
-              labelFormatter={(label: string) => `Company: ${label}`}
+            <ChartYAxis 
+              chartColors={chartColors}
+              fontSize={10}
             />
-            <Legend />
+            <Tooltip content={<ChartTooltip labelFormatter={(label) => `Company: ${label}`} />} />
+            <Legend 
+              wrapperStyle={{ 
+                color: chartColors.text,
+                fontSize: '12px'
+              }}
+            />
             <Bar dataKey="events" fill="#8884d8" name="Events" />
             <Bar dataKey="users" fill="#82ca9d" name="Users" />
             <Bar dataKey="endpoints" fill="#ffc658" name="Endpoints" />

@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"analytics-dashboard/internal/models"
-	"analytics-dashboard/internal/services"
+	"analytics-dashboard/pkg/models"
+	"analytics-dashboard/pkg/services"
 
 	"github.com/gin-gonic/gin"
 )

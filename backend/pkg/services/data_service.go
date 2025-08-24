@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"analytics-dashboard/internal/models"
+	"analytics-dashboard/pkg/models"
 )
 
 // DataService handles data loading and operations

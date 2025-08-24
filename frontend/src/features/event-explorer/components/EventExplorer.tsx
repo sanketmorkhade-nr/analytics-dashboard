@@ -1,19 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
-import { BarChart3, TrendingUp, PieChart } from 'lucide-react';
-import { useEventExplorer } from '../hooks/useEventExplorer';
-import AdvancedFilters from '../components/AdvancedFilters';
-import DataTable from '../components/DataTable';
-import MetricsCard from '../../dashboard/components/MetricsCard';
-import { Activity, Users } from 'lucide-react';
-
-import { useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell } from 'recharts';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import { useChartData } from '../hooks/useChartData';
+import { LineChart, Line, BarChart, Bar, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell } from 'recharts';
+import { TrendingUp, BarChart3, PieChart, Activity, Users } from 'lucide-react';
+import { useEventExplorer } from '../hooks/useEventExplorer';
 import { useMetricsData } from '../hooks/useMetricsData';
+import { useChartData } from '../hooks/useChartData';
 import { useChartFormatting } from '../hooks/useChartFormatting';
+import { useChartTheme } from '@/shared/hooks/useChartTheme';
+import { ChartTooltip } from '@/shared/components/charts/ChartTooltip';
+import { ChartXAxis, ChartYAxis } from '@/shared/components/charts/ChartAxis';
+import AdvancedFilters from './AdvancedFilters';
+import DataTable from './DataTable';
+import MetricsCard from '@/features/dashboard/components/MetricsCard';
 import type { ExportData } from '@/shared/utils/exportUtils';
 
 const EventExplorerPage: React.FC = () => {
@@ -36,6 +36,7 @@ const EventExplorerPage: React.FC = () => {
     endDate: searchFilters.endDate || '',
     companies: searchFilters.company ? [searchFilters.company] : [],
   });
+  const chartColors = useChartTheme();
 
   // Use custom hooks for data management
   const { metrics, loading: metricsLoading } = useMetricsData({
@@ -63,8 +64,6 @@ const EventExplorerPage: React.FC = () => {
       companies: newFilters.companies,
     });
   };
-
-
 
   const handleSearchChangeWrapper = (query: string) => {
     setQuery(query);
@@ -192,21 +191,19 @@ const EventExplorerPage: React.FC = () => {
             <ResponsiveContainer width="100%" height={300} className="sm:h-[400px]">
               {chartType === 'line' ? (
                 <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="timestamp" 
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
+                  <ChartXAxis 
+                    chartColors={chartColors}
                     tickFormatter={formatDate}
-                    tick={{ fontSize: 12 }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={60}
                   />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip 
-                    labelFormatter={formatTooltipDate}
-                    formatter={(value: number, name: string) => [value.toLocaleString(), name]}
+                  <ChartYAxis chartColors={chartColors} />
+                  <Tooltip content={<ChartTooltip labelFormatter={formatTooltipDate} />} />
+                  <Legend 
+                    wrapperStyle={{ 
+                      color: chartColors.text,
+                      fontSize: '12px'
+                    }}
                   />
-                  <Legend />
                   {companies
                     .filter(company => localFilters.companies.length === 0 || localFilters.companies.includes(company.name))
                     .map((company, index) => (
@@ -224,21 +221,19 @@ const EventExplorerPage: React.FC = () => {
                 </LineChart>
               ) : chartType === 'bar' ? (
                 <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="timestamp" 
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
+                  <ChartXAxis 
+                    chartColors={chartColors}
                     tickFormatter={formatDate}
-                    tick={{ fontSize: 12 }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={60}
                   />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip 
-                    labelFormatter={formatTooltipDate}
-                    formatter={(value: number, name: string) => [value.toLocaleString(), name]}
+                  <ChartYAxis chartColors={chartColors} />
+                  <Tooltip content={<ChartTooltip labelFormatter={formatTooltipDate} />} />
+                  <Legend 
+                    wrapperStyle={{ 
+                      color: chartColors.text,
+                      fontSize: '12px'
+                    }}
                   />
-                  <Legend />
                   {companies
                     .filter(company => localFilters.companies.length === 0 || localFilters.companies.includes(company.name))
                     .map((company, index) => (
@@ -271,12 +266,14 @@ const EventExplorerPage: React.FC = () => {
                     ))}
                   </Pie>
                   <Tooltip 
-                    formatter={(value: number, name: string) => [
-                      value.toLocaleString(), 
-                      name
-                    ]}
+                    content={<ChartTooltip />}
                   />
-                  <Legend />
+                  <Legend 
+                    wrapperStyle={{ 
+                      color: chartColors.text,
+                      fontSize: '12px'
+                    }}
+                  />
                 </RechartsPieChart>
               )}
             </ResponsiveContainer>

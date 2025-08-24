@@ -1,8 +1,11 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { BarChart3 } from 'lucide-react';
+import { useChartTheme } from '@/shared/hooks/useChartTheme';
+import { ChartTooltip } from '@/shared/components/charts/ChartTooltip';
+import { ChartXAxis, ChartYAxis } from '@/shared/components/charts/ChartAxis';
 
 interface TopEventsChartProps {
   data: Array<{ type: string; count: number }>;
@@ -10,6 +13,8 @@ interface TopEventsChartProps {
 }
 
 const TopEventsChart: React.FC<TopEventsChartProps> = ({ data, loading }) => {
+  const chartColors = useChartTheme();
+
   if (loading) {
     return (
       <Card>
@@ -55,19 +60,24 @@ const TopEventsChart: React.FC<TopEventsChartProps> = ({ data, loading }) => {
       <CardContent>
         <ResponsiveContainer width="100%" height={250} className="sm:h-[300px]">
           <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis 
-              dataKey="type" 
-              tick={{ fontSize: 10 }}
-              angle={-45}
-              textAnchor="end"
+            <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
+            <ChartXAxis 
+              chartColors={chartColors}
+              xAxisDataKey="type"
+              fontSize={10}
               height={60}
             />
-            <YAxis tick={{ fontSize: 10 }} />
-            <Tooltip 
-              formatter={(value: number) => [value.toLocaleString(), 'Events']}
+            <ChartYAxis 
+              chartColors={chartColors}
+              fontSize={10}
             />
-            <Legend />
+            <Tooltip content={<ChartTooltip labelFormatter={(label) => `Event Type: ${label}`} />} />
+            <Legend 
+              wrapperStyle={{ 
+                color: chartColors.text,
+                fontSize: '12px'
+              }}
+            />
             <Bar 
               dataKey="count" 
               fill="#8884d8" 

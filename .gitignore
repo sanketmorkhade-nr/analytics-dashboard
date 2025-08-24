@@ -11,6 +11,8 @@ frontend/.nyc_output/
 # Backend (Go)
 backend/analytics-server
 backend/analytics-server.exe
+backend/server
+backend/server.exe
 backend/*.test
 backend/coverage.txt
 backend/coverage.html

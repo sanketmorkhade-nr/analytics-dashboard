@@ -1,29 +1,32 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Button } from '@/shared/components/ui/button';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { BarChart3, TrendingUp } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
+import { Skeleton } from '@/shared/components/ui/skeleton';
+import { Alert, AlertDescription } from '@/shared/components/ui/alert';
+import { LineChart, Line, BarChart, Bar, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { TrendingUp, BarChart3, RefreshCw } from 'lucide-react';
 import { useDashboardData } from '../hooks/useDashboardData';
 import { useTrendsData } from '../hooks/useTrendsData';
 import { useChartFormatting } from '../hooks/useChartFormatting';
+import { useAnalyticsParams } from '@/shared/hooks/useAnalyticsParams';
 import { useTopEventsData } from '../hooks/useTopEventsData';
 import { useActiveUsersData } from '../hooks/useActiveUsersData';
 import { useEndpointsData } from '../hooks/useEndpointsData';
 import { useCompaniesData } from '../hooks/useCompaniesData';
+import { useChartTheme } from '@/shared/hooks/useChartTheme';
+import { ChartTooltip } from '@/shared/components/charts/ChartTooltip';
+import { ChartXAxis, ChartYAxis } from '@/shared/components/charts/ChartAxis';
 import MetricsGrid from './MetricsGrid';
-import { useAnalyticsParams } from '@/shared/hooks/useAnalyticsParams';
-import TopEventsChart from './TopEventsChart';
 import TopUsersInsights from './TopUsersInsights';
 import TopEndpointsInsights from './TopEndpointsInsights';
+import TopEventsChart from './TopEventsChart';
 import TopCompaniesChart from './TopCompaniesChart';
-import { Alert, AlertDescription } from '@/shared/components/ui/alert';
-import { RefreshCw } from 'lucide-react';
-import { Skeleton } from '@/shared/components/ui/skeleton';
 
 const Dashboard: React.FC = () => {
   const { metrics, loading, error } = useDashboardData();
   const [chartType, setChartType] = useState<'line' | 'bar'>('line');
+  const chartColors = useChartTheme();
   
   // Use custom hooks for data management
   const { trendsData, timeframe, handleTimeframeChange } = useTrendsData();
@@ -141,21 +144,19 @@ const Dashboard: React.FC = () => {
             <ResponsiveContainer width="100%" height={300} className="sm:h-[400px]">
               {chartType === 'line' ? (
                 <LineChart data={trendsData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="timestamp" 
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
+                  <ChartXAxis 
+                    chartColors={chartColors}
                     tickFormatter={formatDate}
-                    tick={{ fontSize: 12 }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={60}
                   />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip 
-                    labelFormatter={formatTooltipDate}
-                    formatter={(value: number) => [value.toLocaleString(), 'Events']}
+                  <ChartYAxis chartColors={chartColors} />
+                  <Tooltip content={<ChartTooltip labelFormatter={formatTooltipDate} />} />
+                  <Legend 
+                    wrapperStyle={{ 
+                      color: chartColors.text,
+                      fontSize: '12px'
+                    }}
                   />
-                  <Legend />
                   <Line 
                     type="monotone" 
                     dataKey="value" 
@@ -167,21 +168,19 @@ const Dashboard: React.FC = () => {
                 </LineChart>
               ) : (
                 <BarChart data={trendsData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="timestamp" 
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
+                  <ChartXAxis 
+                    chartColors={chartColors}
                     tickFormatter={formatDate}
-                    tick={{ fontSize: 12 }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={60}
                   />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip 
-                    labelFormatter={formatTooltipDate}
-                    formatter={(value: number) => [value.toLocaleString(), 'Events']}
+                  <ChartYAxis chartColors={chartColors} />
+                  <Tooltip content={<ChartTooltip labelFormatter={formatTooltipDate} />} />
+                  <Legend 
+                    wrapperStyle={{ 
+                      color: chartColors.text,
+                      fontSize: '12px'
+                    }}
                   />
-                  <Legend />
                   <Bar dataKey="value" fill="#82ca9d" />
                 </BarChart>
               )}

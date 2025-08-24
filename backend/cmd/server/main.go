@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"analytics-dashboard/internal/api"
-	"analytics-dashboard/internal/config"
-	"analytics-dashboard/internal/services"
+	"analytics-dashboard/pkg/api"
+	"analytics-dashboard/pkg/config"
+	"analytics-dashboard/pkg/services"
 )
 
 func main() {
