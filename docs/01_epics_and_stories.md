@@ -112,6 +112,7 @@ Future enhancement features for deeper insights into usage patterns, including a
 - ✅ Most Active Users analytics
 - ✅ Top Endpoints Insights analytics
 - ✅ Top Companies Chart analytics
+- ✅ Cohort-based Retention Analytics
 
 ---
 
@@ -178,6 +179,7 @@ Future enhancement features for deeper insights into usage patterns, including a
 - **Core Analytics**: Time-based trends, metrics, and filtering ✅
 - **Advanced Analytics**: Multi-company trends, event distribution, top companies ✅
 - **Enhanced Metrics**: Unique users, average events per company, filtered metrics ✅
+- **Retention Analytics**: Cohort-based retention curves with filtering ✅
 - **Search & Filtering**: Unified search with pagination, multi-dimensional filtering ✅
 - **Basic UI**: Responsive dashboard with charts and filters ✅
 - **System Health**: Health check and API documentation endpoints ✅
@@ -207,3 +209,4 @@ Future enhancement features for deeper insights into usage patterns, including a
 - **User Activity Analytics**: Most active users with dual metrics (events + companies) ✅
 - **Top Endpoints Analytics**: Endpoint usage ranking with progress bars ✅
 - **Top Companies Analytics**: Company activity ranking with multi-metric visualization ✅
+- **Retention Analytics**: Cohort-based retention curves with daily/weekly/monthly analysis ✅

@@ -81,7 +81,7 @@ Go-based REST API server handling business logic, data processing, and serving a
 - Provide analytics endpoints for dashboard
 
 ### Interfaces
-- **API**: `GET /api/v1/events`, `GET /api/v1/trends`, `GET /api/v1/metrics`, `GET /api/v1/companies`, `GET /api/v1/event-types`, `GET /api/v1/analytics/companies`, `GET /api/v1/analytics/event-distribution`
+- **API**: `GET /api/v1/events`, `GET /api/v1/trends`, `GET /api/v1/metrics`, `GET /api/v1/companies`, `GET /api/v1/event-types`, `GET /api/v1/analytics/companies`, `GET /api/v1/analytics/event-distribution`, `GET /api/v1/analytics/retention`
 - **Data Store**: Read operations from in-memory data structures via DataService
 - **Data Processor**: Integration with CSV processing and transformation
 - **System Endpoints**: `GET /health`, `GET /` (root endpoint)
@@ -322,6 +322,7 @@ sequenceDiagram
 ### Advanced Analytics Features
 - **Multi-Company Trends**: Line/bar charts showing trends across multiple companies
 - **Enhanced Metrics**: Unique users, average events per company, top event types
+- **Retention Analytics**: Cohort-based retention curves with daily/weekly/monthly analysis
 - **Data Enrichment**: Automatic extraction of company names, users, and endpoints from content
 - **Unified Search**: Text-based search across all event fields with pagination
 - **Advanced Filtering**: Multi-dimensional filtering with date ranges, companies, and event types
@@ -339,3 +340,4 @@ sequenceDiagram
 - **Responsive Design**: Mobile-friendly interface with Tailwind CSS
 - **Interactive Charts**: Multiple chart types (line, bar, pie) with Recharts
 - **Advanced UI Components**: shadcn/ui components for consistent design
+- **Retention Analytics**: Dedicated retention page with cohort analysis and filtering

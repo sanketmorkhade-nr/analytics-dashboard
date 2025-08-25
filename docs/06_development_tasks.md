@@ -779,6 +779,7 @@ This document provides a detailed breakdown of development tasks for both fronte
 - ✅ Most Active Users analytics
 - ✅ Top Endpoints Insights analytics
 - ✅ Top Companies Chart analytics
+- ✅ Cohort-based Retention Analytics
 
 ---
 
@@ -853,13 +854,18 @@ This document provides a detailed breakdown of development tasks for both fronte
     - Features: Company activity ranking with multi-metric visualization
     - Response: Companies array with activity data
 
+14. **GET /api/v1/analytics/retention** - Cohort-based retention analytics
+    - Parameters: company, startDate, endDate, cohortPeriod, minCohortSize
+    - Features: Retention curves, cohort analysis, filtering
+    - Response: Retention data with cohorts and metrics
+
 ### System Endpoints
-14. **GET /health** - Health check endpoint
+15. **GET /health** - Health check endpoint
     - Parameters: None
     - Features: Service health status
     - Response: Health status object
 
-13. **GET /** - Root endpoint with API information
+16. **GET /** - Root endpoint with API information
     - Parameters: None
     - Features: API information and available endpoints
     - Response: API documentation object
@@ -872,6 +878,7 @@ This document provides a detailed breakdown of development tasks for both fronte
 - **Enhanced Metrics**: Unique users calculation, average events per company
 - **Comprehensive Analytics**: Top companies, event distribution, detailed metrics
 - **Advanced Analytics**: Top events by volume, most active users with dual metrics, top endpoints with progress bars, top companies with multi-metric visualization
+- **Retention Analytics**: Cohort-based retention curves with filtering and detailed metrics
 - **System Monitoring**: Health check and API documentation endpoints
 
 ---

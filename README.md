@@ -136,13 +136,21 @@ frontend/src/features/
 - **Usage Patterns**: Time-based usage insights
 - **Performance Metrics**: Average events per company
 
-### **4. Data Enrichment** ⭐
+### **4. Retention Analytics** ⭐
+- **Cohort Analysis**: Group users by first engagement date
+- **Retention Curves**: Visualize user engagement over time
+- **Multi-period Analysis**: Daily, weekly, monthly cohort periods
+- **Advanced Filtering**: Company, date range, minimum cohort size
+- **Interactive Charts**: Line charts with multiple cohort comparisons
+- **Detailed Metrics**: Retention rates, active users, total users per cohort
+
+### **5. Data Enrichment** ⭐
 - **Automatic Extraction**: Company names, users, endpoints from content
 - **Enhanced Data Model**: Rich metadata for better insights
 - **Smart Parsing**: Intelligent content field processing
 - **Data Quality**: Validation and error handling
 
-### **5. System Monitoring** ⭐
+### **6. System Monitoring** ⭐
 - **Health Checks**: API health monitoring
 - **API Documentation**: Self-documenting endpoints
 - **Performance Optimization**: Fast query response times
@@ -150,7 +158,7 @@ frontend/src/features/
 
 🔍 **Feature Details**: 
 - [Multi-Company Trends](./docs/stories/STORY-016.md) | [Enhanced Metrics](./docs/stories/STORY-017.md) | [Data Enrichment](./docs/stories/STORY-018.md)
-- [System Monitoring](./docs/stories/STORY-019.md) | [Unified Search](./docs/stories/STORY-020.md)
+- [Retention Analytics](./docs/stories/STORY-025.md) | [System Monitoring](./docs/stories/STORY-019.md) | [Unified Search](./docs/stories/STORY-020.md)
 
 ## 📊 API Endpoints
 
@@ -168,6 +176,7 @@ frontend/src/features/
 ### Advanced Analytics
 - `GET /api/v1/analytics/companies` - Top active companies
 - `GET /api/v1/analytics/event-distribution` - Event distribution
+- `GET /api/v1/analytics/retention` - Cohort-based retention analytics
 
 ### System
 - `GET /health` - Health check
@@ -301,6 +310,7 @@ This project is created for the Assembly Founding Engineer take-home assignment.
 - [🔧 Data Enrichment](./docs/stories/STORY-018.md) - Smart data processing
 - [⚙️ System Monitoring](./docs/stories/STORY-019.md) - Health checks
 - [🔎 Unified Search](./docs/stories/STORY-020.md) - Advanced search
+- [📊 Retention Analytics](./docs/stories/STORY-025.md) - Cohort-based retention curves
 
 ---
 

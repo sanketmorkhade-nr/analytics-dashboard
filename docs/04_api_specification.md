@@ -430,6 +430,60 @@ curl -X GET "http://localhost:8080/api/v1/analytics/event-distribution"
 
 ---
 
+### 9. Get Retention Analytics
+**GET** `/api/v1/analytics/retention`
+
+Retrieves cohort-based retention analytics with filtering options.
+
+#### Query Parameters
+- `company` (optional): Filter by specific company
+- `startDate` (optional): Start date for analysis (YYYY-MM-DD)
+- `endDate` (optional): End date for analysis (YYYY-MM-DD)
+- `cohortPeriod` (optional): Cohort grouping period - "daily", "weekly", "monthly" (default: "daily")
+- `minCohortSize` (optional): Minimum number of users required in a cohort (default: 5)
+
+#### Response
+```json
+{
+  "cohorts": [
+    {
+      "cohortDate": "2025-05-30",
+      "totalUsers": 15,
+      "retentionData": [
+        {
+          "days": 1,
+          "retentionRate": 86.7,
+          "activeUsers": 13,
+          "totalUsers": 15
+        },
+        {
+          "days": 7,
+          "retentionRate": 60.0,
+          "activeUsers": 9,
+          "totalUsers": 15
+        },
+        {
+          "days": 30,
+          "retentionRate": 40.0,
+          "activeUsers": 6,
+          "totalUsers": 15
+        }
+      ]
+    }
+  ],
+  "timePeriods": [1, 7, 14, 30, 60, 90],
+  "totalCohorts": 5,
+  "averageRetention": 62.3
+}
+```
+
+#### Example Request
+```bash
+curl -X GET "http://localhost:8080/api/v1/analytics/retention?cohortPeriod=daily&minCohortSize=5"
+```
+
+---
+
 ## Error Responses
 
 ### Standard Error Format
