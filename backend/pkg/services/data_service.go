@@ -1349,3 +1349,295 @@ func (ds *DataService) filterEventsByDateAndCompanies(startDate, endDate string,
 
 	return filtered
 }
+
+// GetRetentionAnalytics calculates cohort-based retention analytics
+func (ds *DataService) GetRetentionAnalytics(req models.RetentionRequest) (*models.RetentionResponse, error) {
+	// Filter events based on request parameters
+	filtered := ds.filterEventsForRetention(req)
+
+	if len(filtered) == 0 {
+		return &models.RetentionResponse{
+			Cohorts:          []models.Cohort{},
+			TimePeriods:      []int{1, 7, 14, 30, 60, 90},
+			TotalCohorts:     0,
+			AverageRetention: 0,
+		}, nil
+	}
+
+	// Extract user information and create user activity timeline
+	userActivity := ds.extractUserActivity(filtered)
+
+	// Group users into cohorts
+	cohorts := ds.createCohorts(userActivity, req.CohortPeriod)
+
+	// Calculate retention for each cohort
+	cohortsWithRetention := ds.calculateCohortRetention(cohorts, req.MinCohortSize)
+
+	// Calculate average retention
+	averageRetention := ds.calculateAverageRetention(cohortsWithRetention)
+
+	// Define time periods for retention calculation
+	timePeriods := []int{1, 7, 14, 30, 60, 90}
+
+	return &models.RetentionResponse{
+		Cohorts:          cohortsWithRetention,
+		TimePeriods:      timePeriods,
+		TotalCohorts:     len(cohortsWithRetention),
+		AverageRetention: averageRetention,
+	}, nil
+}
+
+// filterEventsForRetention filters events for retention analysis
+func (ds *DataService) filterEventsForRetention(req models.RetentionRequest) []models.UsageEvent {
+	filtered := ds.events
+
+	// Filter by date range
+	if req.StartDate != "" && req.EndDate != "" {
+		start, _ := time.Parse("2006-01-02", req.StartDate)
+		end, _ := time.Parse("2006-01-02", req.EndDate)
+		end = end.Add(24 * time.Hour)
+
+		var dateFiltered []models.UsageEvent
+		for _, event := range filtered {
+			if event.CreatedAt.After(start) && event.CreatedAt.Before(end) {
+				dateFiltered = append(dateFiltered, event)
+			}
+		}
+		filtered = dateFiltered
+	}
+
+	// Filter by company
+	if req.Company != "" {
+		var companyFiltered []models.UsageEvent
+		for _, event := range filtered {
+			companyName := ds.companies[event.CompanyID]
+			if companyName == "" {
+				companyName = "Unknown Company"
+			}
+			if companyName == req.Company {
+				companyFiltered = append(companyFiltered, event)
+			}
+		}
+		filtered = companyFiltered
+	}
+
+	return filtered
+}
+
+// extractUserActivity extracts user activity timeline from events
+func (ds *DataService) extractUserActivity(events []models.UsageEvent) map[string]*UserActivityInfo {
+	userActivity := make(map[string]*UserActivityInfo)
+
+	for _, event := range events {
+		// Extract user email from content
+		userEmail := ds.extractUserEmail(event.Content)
+		if userEmail == "" {
+			continue
+		}
+
+		userKey := fmt.Sprintf("%s_%s", event.CompanyID, userEmail)
+
+		if userActivity[userKey] == nil {
+			userActivity[userKey] = &UserActivityInfo{
+				CompanyID:   event.CompanyID,
+				CompanyName: ds.companies[event.CompanyID],
+				UserEmail:   userEmail,
+				Activities:  []time.Time{},
+			}
+		}
+
+		userActivity[userKey].Activities = append(userActivity[userKey].Activities, event.CreatedAt)
+	}
+
+	// Sort activities by time for each user
+	for _, user := range userActivity {
+		sort.Slice(user.Activities, func(i, j int) bool {
+			return user.Activities[i].Before(user.Activities[j])
+		})
+	}
+
+	return userActivity
+}
+
+// UserActivityInfo represents user activity information
+type UserActivityInfo struct {
+	CompanyID   string
+	CompanyName string
+	UserEmail   string
+	Activities  []time.Time
+}
+
+// createCohorts groups users into cohorts based on their first activity
+func (ds *DataService) createCohorts(userActivity map[string]*UserActivityInfo, cohortPeriod string) map[string]*CohortInfo {
+	cohorts := make(map[string]*CohortInfo)
+
+	for userKey, user := range userActivity {
+		if len(user.Activities) == 0 {
+			continue
+		}
+
+		firstActivity := user.Activities[0]
+		cohortDate := ds.getCohortDate(firstActivity, cohortPeriod)
+
+		if cohorts[cohortDate] == nil {
+			cohorts[cohortDate] = &CohortInfo{
+				CohortDate: cohortDate,
+				Users:      make(map[string]*UserActivityInfo),
+			}
+		}
+
+		cohorts[cohortDate].Users[userKey] = user
+	}
+
+	return cohorts
+}
+
+// CohortInfo represents cohort information
+type CohortInfo struct {
+	CohortDate string
+	Users      map[string]*UserActivityInfo
+}
+
+// getCohortDate returns the cohort date based on the period
+func (ds *DataService) getCohortDate(date time.Time, period string) string {
+	switch period {
+	case "weekly":
+		// Group by week (Monday as start of week)
+		weekday := int(date.Weekday())
+		if weekday == 0 { // Sunday
+			weekday = 7
+		}
+		daysToSubtract := weekday - 1
+		weekStart := date.AddDate(0, 0, -daysToSubtract)
+		return weekStart.Format("2006-01-02")
+	case "monthly":
+		// Group by month
+		return date.Format("2006-01")
+	default:
+		// Daily (default)
+		return date.Format("2006-01-02")
+	}
+}
+
+// calculateCohortRetention calculates retention rates for each cohort
+func (ds *DataService) calculateCohortRetention(cohorts map[string]*CohortInfo, minCohortSize int) []models.Cohort {
+	var result []models.Cohort
+	timePeriods := []int{1, 7, 14, 30, 60, 90}
+
+	for cohortDate, cohort := range cohorts {
+		if len(cohort.Users) < minCohortSize {
+			continue
+		}
+
+		var retentionData []models.RetentionData
+
+		for _, days := range timePeriods {
+			retentionRate, activeUsers, totalUsers := ds.calculateRetentionForPeriod(cohort, days)
+
+			retentionData = append(retentionData, models.RetentionData{
+				Days:          days,
+				RetentionRate: retentionRate,
+				ActiveUsers:   activeUsers,
+				TotalUsers:    totalUsers,
+			})
+		}
+
+		result = append(result, models.Cohort{
+			CohortDate:    cohortDate,
+			TotalUsers:    len(cohort.Users),
+			RetentionData: retentionData,
+		})
+	}
+
+	// Sort cohorts by date
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].CohortDate < result[j].CohortDate
+	})
+
+	return result
+}
+
+// calculateRetentionForPeriod calculates retention for a specific time period
+func (ds *DataService) calculateRetentionForPeriod(cohort *CohortInfo, days int) (float64, int, int) {
+	totalUsers := len(cohort.Users)
+	if totalUsers == 0 {
+		return 0, 0, 0
+	}
+
+	activeUsers := 0
+
+	for _, user := range cohort.Users {
+		if len(user.Activities) == 0 {
+			continue
+		}
+
+		firstActivity := user.Activities[0]
+		cutoffDate := firstActivity.AddDate(0, 0, days)
+
+		// Check if user has any activity within the retention period
+		hasActivityInPeriod := false
+		for _, activity := range user.Activities {
+			if activity.After(firstActivity) && activity.Before(cutoffDate) {
+				hasActivityInPeriod = true
+				break
+			}
+		}
+
+		if hasActivityInPeriod {
+			activeUsers++
+		}
+	}
+
+	retentionRate := float64(activeUsers) / float64(totalUsers) * 100
+	return retentionRate, activeUsers, totalUsers
+}
+
+// calculateAverageRetention calculates the average retention rate across all cohorts
+func (ds *DataService) calculateAverageRetention(cohorts []models.Cohort) float64 {
+	if len(cohorts) == 0 {
+		return 0
+	}
+
+	totalRetention := 0.0
+	totalCohorts := 0
+
+	for _, cohort := range cohorts {
+		if len(cohort.RetentionData) > 0 {
+			// Use 30-day retention as the primary metric
+			for _, retention := range cohort.RetentionData {
+				if retention.Days == 30 {
+					totalRetention += retention.RetentionRate
+					totalCohorts++
+					break
+				}
+			}
+		}
+	}
+
+	if totalCohorts == 0 {
+		return 0
+	}
+
+	return totalRetention / float64(totalCohorts)
+}
+
+// extractUserEmail extracts user email from content field
+func (ds *DataService) extractUserEmail(content string) string {
+	// Content format: "User active CMMS - Sample Company wes.cherveny@sample.com /work-orders"
+	parts := strings.Split(content, " - ")
+	if len(parts) < 2 {
+		return ""
+	}
+
+	companyAndUser := parts[1]
+	words := strings.Fields(companyAndUser)
+
+	// Find email address (contains @)
+	for _, word := range words {
+		if strings.Contains(word, "@") {
+			return word
+		}
+	}
+
+	return ""
+}

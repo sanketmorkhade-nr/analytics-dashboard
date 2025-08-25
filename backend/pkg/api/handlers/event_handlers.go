@@ -389,3 +389,47 @@ func (h *EventHandler) GetTopActiveCompaniesWithFiltering(c *gin.Context) {
 		"total": len(response),
 	})
 }
+
+// GetRetentionAnalytics handles GET /api/v1/analytics/retention
+func (h *EventHandler) GetRetentionAnalytics(c *gin.Context) {
+	// Parse query parameters
+	company := c.Query("company")
+	startDate := c.Query("startDate")
+	endDate := c.Query("endDate")
+	cohortPeriod := c.DefaultQuery("cohortPeriod", "daily")
+	minCohortSize, _ := strconv.Atoi(c.DefaultQuery("minCohortSize", "5"))
+
+	// Validate cohort period
+	if cohortPeriod != "daily" && cohortPeriod != "weekly" && cohortPeriod != "monthly" {
+		cohortPeriod = "daily"
+	}
+
+	// Validate minimum cohort size
+	if minCohortSize < 1 {
+		minCohortSize = 5
+	}
+
+	// Create retention request
+	req := models.RetentionRequest{
+		Company:       company,
+		StartDate:     startDate,
+		EndDate:       endDate,
+		CohortPeriod:  cohortPeriod,
+		MinCohortSize: minCohortSize,
+	}
+
+	// Get retention analytics
+	response, err := h.dataService.GetRetentionAnalytics(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": gin.H{
+				"code":    "RETENTION_CALCULATION_ERROR",
+				"message": "Failed to calculate retention analytics",
+				"details": err.Error(),
+			},
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+}

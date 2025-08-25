@@ -43,7 +43,7 @@ The application automatically loads data from `backend/data/dataset.csv` on star
 ## 🏗️ Architecture & Technical Decisions
 
 ### **System Architecture**
-- **Frontend**: React 18 + TypeScript + Vite
+- **Frontend**: React 19 + TypeScript + Vite
 - **Backend**: Go + Gin framework
 - **UI Library**: shadcn/ui + Tailwind CSS
 - **Charts**: Recharts for data visualization

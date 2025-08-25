@@ -8,7 +8,7 @@
 
 ## System Overview
 
-The Usage Analytics Dashboard MVP is a web-based application designed to help internal teams understand customer usage patterns through interactive visualizations and filtering capabilities. The system loads usage data from a local CSV file at startup, processes it into structured JSON format, and stores it in memory for fast analytics queries. This POC focuses on core functionality without external dependencies.
+The Usage Analytics Dashboard is a web-based application designed to help internal teams understand customer usage patterns through interactive visualizations and filtering capabilities. The system loads usage data from a local CSV file at startup, processes it into structured JSON format, and stores it in memory for fast analytics queries. This implementation focuses on core functionality without external dependencies.
 
 ---
 
@@ -17,13 +17,13 @@ The Usage Analytics Dashboard MVP is a web-based application designed to help in
 ```mermaid
 graph TB
     subgraph "Frontend Layer"
-        UI[React Frontend]
+        UI[Frontend]
         Charts[Chart Components]
         Filters[Filter Components]
     end
     
     subgraph "Backend Layer"
-        API[Go API Server]
+        API[API Server]
         DataProcessor[Data Processor]
     end
     
@@ -32,11 +32,11 @@ graph TB
         CSVFile[CSV File]
     end
     
-    UI --> API
-    Charts --> API
-    Filters --> API
-    API --> DataProcessor
-    DataProcessor --> MemoryStore
+    UI <--> API
+    Charts <--> API
+    Filters <--> API
+    API <--> DataProcessor
+    DataProcessor <--> MemoryStore
     CSVFile --> DataProcessor
 ```
 
@@ -177,7 +177,7 @@ In-memory data storage system for fast access to processed usage data and analyt
 - **Routing**: React Router for frontend navigation
 - **State Management**: React hooks and context for state management
 
-### Future Integrations (Not in MVP)
+### Future Integrations (Not in Current Implementation)
 - **Database**: PostgreSQL or similar for persistent storage
 - **Authentication**: OAuth or JWT-based authentication
 - **Search Engine**: Elasticsearch for full-text search (currently using in-memory search)
@@ -231,12 +231,12 @@ sequenceDiagram
 
 ## Security Architecture
 
-### MVP Security (Minimal)
+### Core Security (Minimal)
 - Input validation and sanitization for API endpoints
 - Basic error handling without exposing sensitive information
 - Secure coding practices for data processing
 
-### Future Security Enhancements (Not in MVP)
+### Future Security Enhancements (Not in Current Implementation)
 - JWT-based authentication for API access
 - Role-based access control (RBAC)
 - Session management with Redis
@@ -250,7 +250,7 @@ sequenceDiagram
 
 ## Scalability Considerations
 
-### MVP Performance
+### Core Performance
 - In-memory data access for fast query response
 - Efficient data structures for filtering and aggregation
 - Basic error handling and logging
@@ -260,7 +260,7 @@ sequenceDiagram
 - Data enrichment with company name and user extraction
 - Multi-company trends visualization
 
-### Future Scalability Enhancements (Not in MVP)
+### Future Scalability Enhancements (Not in Current Implementation)
 - Horizontal scaling with stateless API design
 - Load balancing across multiple API instances
 - Database integration with read replicas
@@ -278,7 +278,7 @@ sequenceDiagram
 ## Technology Stack
 
 ### Frontend
-- **Framework**: React 18 with TypeScript
+- **Framework**: React 19 with TypeScript
 - **UI Library**: shadcn/ui components
 - **Charts**: Recharts (LineChart, BarChart, PieChart)
 - **State Management**: React hooks and context for state management
@@ -297,7 +297,7 @@ sequenceDiagram
 - **Data Enrichment**: Company name, user, and endpoint extraction
 - **Search**: In-memory text search across multiple fields
 
-### MVP Infrastructure
+### Core Infrastructure
 - **Development**: Local development environment
 - **Data Source**: Local CSV file with configurable path (DATA_PATH)
 - **Deployment**: Simple binary execution
@@ -305,7 +305,7 @@ sequenceDiagram
 - **Health Monitoring**: Health check endpoint (/health)
 - **API Documentation**: Root endpoint (/) with available endpoints
 
-### Future Infrastructure (Not in MVP)
+### Future Infrastructure (Not in Current Implementation)
 - **Database**: PostgreSQL
 - **Cache**: Redis
 - **Search**: Elasticsearch or PostgreSQL full-text search
@@ -317,7 +317,7 @@ sequenceDiagram
 
 ---
 
-## Implemented Features Beyond Basic MVP
+## Implemented Features Beyond Basic Requirements
 
 ### Advanced Analytics Features
 - **Multi-Company Trends**: Line/bar charts showing trends across multiple companies

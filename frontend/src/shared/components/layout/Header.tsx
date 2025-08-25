@@ -48,6 +48,14 @@ const Header: React.FC = () => {
           >
             Event Explorer
           </Link>
+          <Link 
+            to="/retention" 
+            className={`text-md font-medium transition-colors hover:text-primary ${
+              isActive('/retention') ? 'text-primary' : 'text-muted-foreground'
+            }`}
+          >
+            Retention
+          </Link>
         </nav>
 
         {/* User Menu and Mobile Menu Button */}
@@ -71,11 +79,6 @@ const Header: React.FC = () => {
                     Light Mode
                   </>
                 )}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <LogOut className="mr-2 h-4 w-4" />
-                Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -118,6 +121,17 @@ const Header: React.FC = () => {
             >
               Event Explorer
             </Link>
+            <Link 
+              to="/retention" 
+              className={`block py-2 px-3 rounded-md text-base font-medium transition-colors ${
+                isActive('/retention') 
+                  ? 'text-primary bg-primary/10' 
+                  : 'text-muted-foreground hover:text-primary hover:bg-muted'
+              }`}
+              onClick={closeMobileMenu}
+            >
+              Retention
+            </Link>
             <div className="pt-2 border-t">
               <div className="flex items-center space-x-2 py-2 px-3">
                 <User className="h-4 w-4 text-muted-foreground" />
@@ -139,10 +153,6 @@ const Header: React.FC = () => {
                       Light Mode
                     </>
                   )}
-                </button>
-                <button className="block w-full text-left py-2 px-3 rounded-md text-sm text-muted-foreground hover:text-primary hover:bg-muted flex items-center">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
                 </button>
               </div>
             </div>

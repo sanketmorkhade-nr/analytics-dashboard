@@ -208,3 +208,35 @@ type ErrorDetails struct {
 	Message string      `json:"message"`
 	Details interface{} `json:"details,omitempty"`
 }
+
+// RetentionData represents retention data for a specific cohort and time period
+type RetentionData struct {
+	Days          int     `json:"days"`
+	RetentionRate float64 `json:"retentionRate"`
+	ActiveUsers   int     `json:"activeUsers"`
+	TotalUsers    int     `json:"totalUsers"`
+}
+
+// Cohort represents a user cohort with retention data
+type Cohort struct {
+	CohortDate    string          `json:"cohortDate"`
+	TotalUsers    int             `json:"totalUsers"`
+	RetentionData []RetentionData `json:"retentionData"`
+}
+
+// RetentionResponse represents retention analytics response
+type RetentionResponse struct {
+	Cohorts          []Cohort `json:"cohorts"`
+	TimePeriods      []int    `json:"timePeriods"`
+	TotalCohorts     int      `json:"totalCohorts"`
+	AverageRetention float64  `json:"averageRetention"`
+}
+
+// RetentionRequest represents retention analytics request parameters
+type RetentionRequest struct {
+	Company       string `json:"company,omitempty"`
+	StartDate     string `json:"startDate,omitempty"`
+	EndDate       string `json:"endDate,omitempty"`
+	CohortPeriod  string `json:"cohortPeriod,omitempty"` // "daily", "weekly", "monthly"
+	MinCohortSize int    `json:"minCohortSize,omitempty"`
+}

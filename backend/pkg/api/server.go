@@ -72,6 +72,7 @@ func (s *Server) setupRoutes() {
 			analytics.GET("/active-users", eventHandler.GetMostActiveUsers)
 			analytics.GET("/top-endpoints", eventHandler.GetTopEndpointsByUsage)
 			analytics.GET("/top-companies", eventHandler.GetTopActiveCompaniesWithFiltering)
+			analytics.GET("/retention", eventHandler.GetRetentionAnalytics)
 		}
 	}
 
@@ -96,6 +97,7 @@ func (s *Server) setupRoutes() {
 				"companies":   "/api/v1/companies",
 				"event_types": "/api/v1/event-types",
 				"analytics":   "/api/v1/analytics",
+				"retention":   "/api/v1/analytics/retention",
 			},
 		})
 	})

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import { LineChart, Line, BarChart, Bar, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, Bar, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell, ComposedChart } from 'recharts';
 import { TrendingUp, BarChart3, PieChart, Activity, Users } from 'lucide-react';
 import { useEventExplorer } from '../hooks/useEventExplorer';
 import { useMetricsData } from '../hooks/useMetricsData';
@@ -30,7 +30,7 @@ const EventExplorerPage: React.FC = () => {
     resetAll,
   } = useEventExplorer();
 
-  const [chartType, setChartType] = useState<'line' | 'bar' | 'pie'>('line');
+  const [chartType, setChartType] = useState<'line' | 'stacked-bar' | 'pie'>('line');
   const [localFilters, setLocalFilters] = useState({
     startDate: searchFilters.startDate || '',
     endDate: searchFilters.endDate || '',
@@ -155,13 +155,13 @@ const EventExplorerPage: React.FC = () => {
             <span className="sr-only">Line Chart</span>
           </Button>
           <Button
-            variant={chartType === 'bar' ? 'default' : 'ghost'}
+            variant={chartType === 'stacked-bar' ? 'default' : 'ghost'}
             size="sm"
-            onClick={() => setChartType('bar')}
+            onClick={() => setChartType('stacked-bar')}
             className="h-8 w-8 p-0"
           >
             <BarChart3 className="h-4 w-4" />
-            <span className="sr-only">Bar Chart</span>
+            <span className="sr-only">Stacked Bar Chart</span>
           </Button>
           <Button
             variant={chartType === 'pie' ? 'default' : 'ghost'}
@@ -188,7 +188,7 @@ const EventExplorerPage: React.FC = () => {
               No data available for the selected filters
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height={300} className="sm:h-[400px]">
+            <ResponsiveContainer width="100%" height={chartType === 'pie' ? 500 : 300} className={chartType === 'pie' ? 'sm:h-[600px]' : 'sm:h-[400px]'}>
               {chartType === 'line' ? (
                 <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
@@ -219,8 +219,8 @@ const EventExplorerPage: React.FC = () => {
                       />
                     ))}
                 </LineChart>
-              ) : chartType === 'bar' ? (
-                <BarChart data={chartData}>
+              ) : chartType === 'stacked-bar' ? (
+                <ComposedChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
                   <ChartXAxis 
                     chartColors={chartColors}
@@ -242,9 +242,10 @@ const EventExplorerPage: React.FC = () => {
                         dataKey={company.name} 
                         fill={companyColors[index % companyColors.length]}
                         name={company.name}
+                        stackId="stack"
                       />
                     ))}
-                </BarChart>
+                </ComposedChart>
               ) : (
                 <RechartsPieChart>
                   <Pie
@@ -252,9 +253,9 @@ const EventExplorerPage: React.FC = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(1)}%`}
-                    outerRadius={80}
-                    className="sm:outerRadius={120}"
+                    label={({ name, percent }) => `${name}\n${((percent || 0) * 100).toFixed(1)}%`}
+                    outerRadius={150}
+                    innerRadius={60}
                     fill="#8884d8"
                     dataKey="value"
                   >
@@ -271,7 +272,8 @@ const EventExplorerPage: React.FC = () => {
                   <Legend 
                     wrapperStyle={{ 
                       color: chartColors.text,
-                      fontSize: '12px'
+                      fontSize: '14px',
+                      paddingTop: '20px'
                     }}
                   />
                 </RechartsPieChart>
