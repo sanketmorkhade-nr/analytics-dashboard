@@ -251,14 +251,15 @@ frontend/src/features/
 
 ## 🎥 Demo Video
 
-[Link to demo video will be added here]
+📹 **[Usage Analytics Dashboard Demo](./demo/Usage%20Analytivs%20Dashboard%20Demo.mp4)**
 
 The demo showcases:
 - Dashboard overview with key metrics
 - Multi-company trends visualization
 - Advanced search and filtering
 - Interactive charts and data exploration
-- Responsive design across devices
+- Event explorer with advanced filtering
+- Retention analytics with cohort analysis
 
 ## 🚀 Future Enhancements
 
