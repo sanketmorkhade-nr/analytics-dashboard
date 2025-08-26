@@ -1,29 +1,25 @@
-import { useState, useEffect } from 'react';
-import { retentionService, type RetentionRequest, type RetentionResponse } from '../services/retentionService';
+import { useQuery } from '@tanstack/react-query';
+import { retentionService, type RetentionRequest } from '../services/retentionService';
+import { ERROR_MESSAGES, ANALYTICS_CONSTANTS } from '@/shared/constants/analytics';
+import { formatQueryError } from '@/shared/utils/queryUtils';
 
 export const useRetentionData = (params: RetentionRequest) => {
-  const [data, setData] = useState<RetentionResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data,
+    isLoading: loading,
+    error,
+  } = useQuery({
+    queryKey: ['retention', params],
+    queryFn: () => retentionService.getRetentionAnalytics({
+      ...params,
+      startDate: params.startDate || ANALYTICS_CONSTANTS.DEFAULT_DATE_RANGE.startDate,
+      endDate: params.endDate || ANALYTICS_CONSTANTS.DEFAULT_DATE_RANGE.endDate,
+    }),
+  });
 
-  useEffect(() => {
-    const fetchRetentionData = async () => {
-      setLoading(true);
-      setError(null);
-      
-      try {
-        const response = await retentionService.getRetentionAnalytics(params);
-        setData(response);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch retention data');
-        setData(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRetentionData();
-  }, [params.company, params.startDate, params.endDate, params.cohortPeriod, params.minCohortSize]);
-
-  return { data, loading, error };
+  return { 
+    data, 
+    loading, 
+    error: formatQueryError(error, ERROR_MESSAGES.RETENTION_DATA)
+  };
 };

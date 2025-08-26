@@ -1,6 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { dashboardService } from '../services/dashboardService';
-import type { CompanyActivity } from '@/shared/types/api';
+import { QUERY_KEYS, ERROR_MESSAGES } from '@/shared/constants/analytics';
+import { 
+  buildQueryKey,
+  formatQueryError,
+} from '@/shared/utils/queryUtils';
 
 export interface CompaniesParams {
   startDate?: string;
@@ -10,32 +14,20 @@ export interface CompaniesParams {
 }
 
 export const useCompaniesData = (params: CompaniesParams = {}) => {
-  const [companies, setCompanies] = useState<CompanyActivity[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchCompanies = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await dashboardService.getTopActiveCompanies(params);
-      setCompanies(response.data);
-    } catch (err) {
-      console.error('Failed to fetch companies data:', err);
-      setError('Failed to fetch companies data');
-    } finally {
-      setLoading(false);
-    }
-  }, [params]);
-
-  useEffect(() => {
-    fetchCompanies();
-  }, [fetchCompanies]);
+  const {
+    data,
+    isLoading: loading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: buildQueryKey(QUERY_KEYS.COMPANIES, params),
+    queryFn: () => dashboardService.getTopActiveCompanies(params),
+  });
 
   return {
-    companies,
+    companies: data?.data || [],
     loading,
-    error,
-    refetch: fetchCompanies,
+    error: formatQueryError(error, ERROR_MESSAGES.COMPANIES_DATA),
+    refetch,
   };
 };

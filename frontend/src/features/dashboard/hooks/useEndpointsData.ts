@@ -1,6 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { dashboardService } from '../services/dashboardService';
-import type { EndpointActivity } from '@/shared/types/api';
+import { QUERY_KEYS, ERROR_MESSAGES } from '@/shared/constants/analytics';
+import { 
+  buildQueryKey,
+  formatQueryError,
+} from '@/shared/utils/queryUtils';
 
 export interface EndpointsParams {
   startDate?: string;
@@ -10,32 +14,20 @@ export interface EndpointsParams {
 }
 
 export const useEndpointsData = (params: EndpointsParams = {}) => {
-  const [endpoints, setEndpoints] = useState<EndpointActivity[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchEndpoints = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await dashboardService.getTopEndpointsByUsage(params);
-      setEndpoints(response.data);
-    } catch (err) {
-      console.error('Failed to fetch endpoints data:', err);
-      setError('Failed to fetch endpoints data');
-    } finally {
-      setLoading(false);
-    }
-  }, [params]);
-
-  useEffect(() => {
-    fetchEndpoints();
-  }, [fetchEndpoints]);
+  const {
+    data,
+    isLoading: loading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: buildQueryKey(QUERY_KEYS.ENDPOINTS, params),
+    queryFn: () => dashboardService.getTopEndpointsByUsage(params),
+  });
 
   return {
-    endpoints,
+    endpoints: data?.data || [],
     loading,
-    error,
-    refetch: fetchEndpoints,
+    error: formatQueryError(error, ERROR_MESSAGES.ENDPOINTS_DATA),
+    refetch,
   };
 };

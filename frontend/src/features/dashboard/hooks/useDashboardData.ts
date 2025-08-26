@@ -1,6 +1,12 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { dashboardService } from '../services/dashboardService';
 import type { MetricsResponse, TimeSeriesResponse } from '@/shared/types/api';
+import { QUERY_KEYS, ERROR_MESSAGES } from '@/shared/constants/analytics';
+import { 
+  getDefaultDateRange,
+  buildQueryKey,
+  formatQueryError 
+} from '@/shared/utils/queryUtils';
 
 export interface DashboardData {
   metrics: MetricsResponse | null;
@@ -10,51 +16,45 @@ export interface DashboardData {
 }
 
 export const useDashboardData = () => {
-  const [data, setData] = useState<DashboardData>({
-    metrics: null,
-    trends: null,
-    loading: true,
-    error: null,
+  const { startDate, endDate } = getDefaultDateRange();
+
+  const {
+    data: metrics,
+    isLoading: metricsLoading,
+    error: metricsError,
+    refetch: refetchMetrics,
+  } = useQuery({
+    queryKey: buildQueryKey(QUERY_KEYS.DASHBOARD, 'metrics'),
+    queryFn: () => dashboardService.getMetrics(),
   });
 
-  const fetchData = useCallback(async () => {
-    setData(prev => ({ ...prev, loading: true, error: null }));
-    try {
-      // Use the correct date range for the 2025 data
-      // Data range is from 2025-05-30 to 2025-07-22
-      const endDate = '2025-07-22';
-      const startDate = '2025-06-01'; // Start from June 1st for a good sample
-      
-      const [metricsRes, trendsRes] = await Promise.all([
-        dashboardService.getMetrics(),
-        dashboardService.getTrends({ 
-          timeframe: 'daily',
-          startDate,
-          endDate
-        })
-      ]);
-      setData({
-        metrics: metricsRes,
-        trends: trendsRes,
-        loading: false,
-        error: null,
-      });
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch dashboard data';
-      setData(prev => ({ ...prev, error: errorMessage, loading: false }));
-    }
-  }, []);
+  const {
+    data: trends,
+    isLoading: trendsLoading,
+    error: trendsError,
+    refetch: refetchTrends,
+  } = useQuery({
+    queryKey: buildQueryKey(QUERY_KEYS.DASHBOARD, 'trends', 'daily', startDate, endDate),
+    queryFn: () => dashboardService.getTrends({ 
+      timeframe: 'daily',
+      startDate,
+      endDate
+    }),
+  });
 
-  const refreshData = useCallback(() => {
-    fetchData();
-  }, [fetchData]);
+  const loading = metricsLoading || trendsLoading;
+  const error = metricsError || trendsError;
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  const refreshData = () => {
+    refetchMetrics();
+    refetchTrends();
+  };
 
   return {
-    ...data,
+    metrics: metrics || null,
+    trends: trends || null,
+    loading,
+    error: formatQueryError(error, ERROR_MESSAGES.DASHBOARD_DATA),
     refreshData,
   };
 };

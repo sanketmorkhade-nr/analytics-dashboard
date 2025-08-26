@@ -1,5 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { dashboardService } from '../services/dashboardService';
+import { QUERY_KEYS, ERROR_MESSAGES } from '@/shared/constants/analytics';
+import { 
+  buildQueryKey,
+  formatQueryError,
+} from '@/shared/utils/queryUtils';
 
 export interface TopEventsParams {
   startDate?: string;
@@ -9,32 +14,20 @@ export interface TopEventsParams {
 }
 
 export const useTopEventsData = (params: TopEventsParams = {}) => {
-  const [topEvents, setTopEvents] = useState<Array<{ type: string; count: number }>>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchTopEvents = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await dashboardService.getTopEventsByVolume(params);
-      setTopEvents(response.data);
-    } catch (err) {
-      console.error('Failed to fetch top events data:', err);
-      setError('Failed to fetch top events data');
-    } finally {
-      setLoading(false);
-    }
-  }, [params]);
-
-  useEffect(() => {
-    fetchTopEvents();
-  }, [fetchTopEvents]);
+  const {
+    data,
+    isLoading: loading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: buildQueryKey(QUERY_KEYS.TOP_EVENTS, params),
+    queryFn: () => dashboardService.getTopEventsByVolume(params),
+  });
 
   return {
-    topEvents,
+    topEvents: data?.data || [],
     loading,
-    error,
-    refetch: fetchTopEvents,
+    error: formatQueryError(error, ERROR_MESSAGES.TOP_EVENTS_DATA),
+    refetch,
   };
 };

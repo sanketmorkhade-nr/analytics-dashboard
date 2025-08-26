@@ -1,6 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { eventExplorerService } from '../services/eventExplorerService';
-import type { SearchResponse } from '@/shared/types/api';
+import { QUERY_KEYS, ERROR_MESSAGES, ANALYTICS_CONSTANTS } from '@/shared/constants/analytics';
+import { 
+  buildQueryKey,
+  formatQueryError,
+} from '@/shared/utils/queryUtils';
 
 export interface EventExplorerFilters {
   startDate: string;
@@ -25,46 +30,30 @@ export const useEventExplorer = () => {
       company: '',
       companies: [],
     },
-    page: 1,
-    pageSize: 10,
+    page: ANALYTICS_CONSTANTS.DEFAULT_PAGE,
+    pageSize: ANALYTICS_CONSTANTS.DEFAULT_PAGE_SIZE,
   });
 
-  const [data, setData] = useState<SearchResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
+  const {
+    data,
+    isLoading: loading,
+    error,
+  } = useQuery({
+    queryKey: buildQueryKey(QUERY_KEYS.EVENT_EXPLORER, state),
+    queryFn: () => {
       const params = {
         query: state.query || undefined,
-        startDate: state.filters.startDate || undefined,
-        endDate: state.filters.endDate || undefined,
+        startDate: state.filters.startDate || ANALYTICS_CONSTANTS.DEFAULT_DATE_RANGE.startDate,
+        endDate: state.filters.endDate || ANALYTICS_CONSTANTS.DEFAULT_DATE_RANGE.endDate,
         company: state.filters.company || undefined,
         companies: state.filters.companies || undefined,
         page: state.page,
         pageSize: state.pageSize,
       };
 
-      const response = await eventExplorerService.searchEvents(params);
-      setData(response);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch data');
-    } finally {
-      setLoading(false);
-    }
-  }, [state]);
-
-  // Debounced search effect
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      fetchData();
-    }, 300); // 300ms debounce
-
-    return () => clearTimeout(timeoutId);
-  }, [fetchData]);
+      return eventExplorerService.searchEvents(params);
+    },
+  });
 
   const setQuery = useCallback((query: string) => {
     setState(prev => ({ ...prev, query, page: 1 }));
@@ -90,13 +79,13 @@ export const useEventExplorer = () => {
     setState({
       query: '',
       filters: {
-        startDate: '',
-        endDate: '',
+        startDate: ANALYTICS_CONSTANTS.DEFAULT_DATE_RANGE.startDate,
+        endDate: ANALYTICS_CONSTANTS.DEFAULT_DATE_RANGE.endDate,
         company: '',
         companies: [],
       },
-      page: 1,
-      pageSize: 10,
+      page: ANALYTICS_CONSTANTS.DEFAULT_PAGE,
+      pageSize: ANALYTICS_CONSTANTS.DEFAULT_PAGE_SIZE,
     });
   }, []);
 
@@ -106,7 +95,7 @@ export const useEventExplorer = () => {
     filters: state.filters,
     data,
     loading,
-    error,
+    error: formatQueryError(error, ERROR_MESSAGES.EVENT_EXPLORER_DATA),
     page: state.page,
     pageSize: state.pageSize,
 

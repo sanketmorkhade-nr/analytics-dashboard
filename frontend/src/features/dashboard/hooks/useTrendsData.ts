@@ -1,39 +1,30 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { dashboardService } from '../services/dashboardService';
-import type { TimeSeriesData } from '@/shared/types/api';
+import { QUERY_KEYS, ERROR_MESSAGES } from '@/shared/constants/analytics';
+import { 
+  getDefaultDateRange,
+  buildQueryKey,
+  formatQueryError 
+} from '@/shared/utils/queryUtils';
 
 export const useTrendsData = () => {
-  const [trendsData, setTrendsData] = useState<TimeSeriesData[] | null>(null);
   const [timeframe, setTimeframe] = useState<'daily' | 'weekly' | 'monthly'>('daily');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { startDate, endDate } = getDefaultDateRange();
 
-  // Fetch trends data with current timeframe
-  const fetchTrendsData = useCallback(async (selectedTimeframe: 'daily' | 'weekly' | 'monthly') => {
-    setLoading(true);
-    setError(null);
-    try {
-      const endDate = '2025-07-22';
-      const startDate = '2025-06-01';
-      
-      const response = await dashboardService.getTrends({ 
-        timeframe: selectedTimeframe,
-        startDate,
-        endDate
-      });
-      setTrendsData(response.data);
-    } catch (err) {
-      console.error('Failed to fetch trends data:', err);
-      setError('Failed to fetch trends data');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Update trends data when timeframe changes
-  useEffect(() => {
-    fetchTrendsData(timeframe);
-  }, [timeframe, fetchTrendsData]);
+  const {
+    data: trendsData,
+    isLoading: loading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: buildQueryKey(QUERY_KEYS.TRENDS, timeframe, startDate, endDate),
+    queryFn: () => dashboardService.getTrends({ 
+      timeframe,
+      startDate,
+      endDate
+    }),
+  });
 
   // Handle timeframe change
   const handleTimeframeChange = (value: string) => {
@@ -42,11 +33,11 @@ export const useTrendsData = () => {
   };
 
   return {
-    trendsData,
+    trendsData: trendsData?.data || null,
     timeframe,
     loading,
-    error,
+    error: formatQueryError(error, ERROR_MESSAGES.TRENDS_DATA),
     handleTimeframeChange,
-    refetch: () => fetchTrendsData(timeframe),
+    refetch: () => refetch(),
   };
 };

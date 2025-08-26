@@ -10,6 +10,16 @@ interface RetentionCurveChartProps {
   loading?: boolean;
 }
 
+interface ChartDataPoint {
+  days: number;
+  [cohortDate: string]: number | string;
+}
+
+interface RetentionDataPoint {
+  days: number;
+  retentionRate: number;
+}
+
 export const RetentionCurveChart: React.FC<RetentionCurveChartProps> = ({ cohorts, loading = false }) => {
   const chartColors = useChartTheme();
   
@@ -35,10 +45,10 @@ export const RetentionCurveChart: React.FC<RetentionCurveChartProps> = ({ cohort
 
     // Create data points for each day
     return sortedDays.map(days => {
-      const dataPoint: any = { days };
+      const dataPoint: ChartDataPoint = { days };
       
       cohorts.forEach((cohort) => {
-        const retentionData = cohort.retentionData.find((d: any) => d.days === days);
+        const retentionData = cohort.retentionData.find((d: RetentionDataPoint) => d.days === days);
         if (retentionData) {
           dataPoint[cohort.cohortDate] = retentionData.retentionRate;
         }

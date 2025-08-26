@@ -32,8 +32,8 @@ const EventExplorerPage: React.FC = () => {
 
   const [chartType, setChartType] = useState<'line' | 'stacked-bar' | 'pie'>('line');
   const [localFilters, setLocalFilters] = useState({
-    startDate: searchFilters.startDate || '',
-    endDate: searchFilters.endDate || '',
+    startDate: searchFilters.startDate,
+    endDate: searchFilters.endDate,
     companies: searchFilters.company ? [searchFilters.company] : [],
   });
   const chartColors = useChartTheme();

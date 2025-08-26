@@ -2,11 +2,11 @@ import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
 
 class ApiService {
   private client: AxiosInstance;
-  private baseUrl = 'http://localhost:8080/api/v1';
+  private apiUrl = `${import.meta.env.VITE_API_BASE_URL}/api/v1`;
 
   constructor() {
     this.client = axios.create({
-      baseURL: this.baseUrl,
+      baseURL: this.apiUrl,
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json',

@@ -29,7 +29,7 @@ const Dashboard: React.FC = () => {
   const chartColors = useChartTheme();
   
   // Use custom hooks for data management
-  const { trendsData, timeframe, handleTimeframeChange } = useTrendsData();
+  const { trendsData, timeframe, handleTimeframeChange, loading: trendsLoading } = useTrendsData();
   const { formatDate, formatTooltipDate } = useChartFormatting(timeframe);
 
   // Common parameters for analytics data
@@ -134,13 +134,10 @@ const Dashboard: React.FC = () => {
           <CardTitle>Usage Trends Over Time</CardTitle>
         </CardHeader>
         <CardContent>
-          {loading ? (
+          {trendsLoading && (
             <Skeleton className="h-[300px] sm:h-[400px] w-full" />
-          ) : !trendsData || trendsData.length === 0 ? (
-            <div className="flex items-center justify-center h-[300px] sm:h-[400px] text-muted-foreground">
-              No data available for the selected time period
-            </div>
-          ) : (
+          )}
+          {!trendsLoading && trendsData && trendsData.length !== 0 ? (
             <ResponsiveContainer width="100%" height={300} className="sm:h-[400px]">
               {chartType === 'line' ? (
                 <LineChart data={trendsData}>
@@ -185,6 +182,10 @@ const Dashboard: React.FC = () => {
                 </BarChart>
               )}
             </ResponsiveContainer>
+          ) : (
+            <div className="flex items-center justify-center h-[300px] sm:h-[400px] text-muted-foreground">
+              No data available for the selected time period
+            </div>
           )}
         </CardContent>
       </Card>

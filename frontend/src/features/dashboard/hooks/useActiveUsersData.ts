@@ -1,6 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { dashboardService } from '../services/dashboardService';
-import type { UserActivity } from '@/shared/types/api';
+import { QUERY_KEYS, ERROR_MESSAGES } from '@/shared/constants/analytics';
+import { 
+  buildQueryKey,
+  formatQueryError,
+} from '@/shared/utils/queryUtils';
 
 export interface ActiveUsersParams {
   startDate?: string;
@@ -10,32 +14,20 @@ export interface ActiveUsersParams {
 }
 
 export const useActiveUsersData = (params: ActiveUsersParams = {}) => {
-  const [activeUsers, setActiveUsers] = useState<UserActivity[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchActiveUsers = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await dashboardService.getMostActiveUsers(params);
-      setActiveUsers(response.data);
-    } catch (err) {
-      console.error('Failed to fetch active users data:', err);
-      setError('Failed to fetch active users data');
-    } finally {
-      setLoading(false);
-    }
-  }, [params]);
-
-  useEffect(() => {
-    fetchActiveUsers();
-  }, [fetchActiveUsers]);
+  const {
+    data,
+    isLoading: loading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: buildQueryKey(QUERY_KEYS.ACTIVE_USERS, params),
+    queryFn: () => dashboardService.getMostActiveUsers(params),
+  });
 
   return {
-    activeUsers,
+    activeUsers: data?.data || [],
     loading,
-    error,
-    refetch: fetchActiveUsers,
+    error: formatQueryError(error, ERROR_MESSAGES.ACTIVE_USERS_DATA),
+    refetch,
   };
 };

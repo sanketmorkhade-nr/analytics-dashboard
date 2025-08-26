@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/shared/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/shared/components/ui/dropdown-menu';
-import { BarChart3, User, Menu, X, Moon, Sun, LogOut } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu';
+import { BarChart3, User, Menu, X, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 const Header: React.FC = () => {

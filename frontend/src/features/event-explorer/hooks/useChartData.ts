@@ -1,5 +1,12 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { eventExplorerService } from '../services/eventExplorerService';
+import { QUERY_KEYS, ERROR_MESSAGES, CHART_CONFIG } from '@/shared/constants/analytics';
+import { 
+  buildQueryKey,
+  formatQueryError,
+  getDateParams
+} from '@/shared/utils/queryUtils';
 
 interface ChartDataHookProps {
   startDate?: string;
@@ -7,83 +14,49 @@ interface ChartDataHookProps {
   companies: string[];
 }
 
-interface ChartDataState {
-  chartData: Array<{ timestamp: string; [key: string]: number | string }>;
-  companies: Array<{ id: string; name: string; eventCount: number }>;
-  loading: boolean;
-  error: string | null;
-}
-
 export const useChartData = ({ startDate, endDate, companies }: ChartDataHookProps) => {
-  const [state, setState] = useState<ChartDataState>({
-    chartData: [],
-    companies: [],
-    loading: false,
-    error: null,
+  const { startDate: startDateParam, endDate: endDateParam } = getDateParams(startDate, endDate);
+
+  // Fetch chart data
+  const {
+    data: chartDataResponse,
+    isLoading: chartLoading,
+    error: chartError,
+    refetch: refetchChartData,
+  } = useQuery({
+    queryKey: buildQueryKey(QUERY_KEYS.CHART_DATA, startDateParam, endDateParam, companies),
+    queryFn: () => eventExplorerService.getMultiCompanyTrends({
+      startDate: startDateParam,
+      endDate: endDateParam,
+      companies,
+      eventTypes: []
+    }),
+    enabled: !!(startDateParam && endDateParam),
   });
 
-  // Fetch chart data based on current filters
-  const fetchChartData = useCallback(async () => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
-    try {
-      const endDateParam = endDate || '2025-07-22';
-      const startDateParam = startDate || '2025-06-01';
-      
-      const response = await eventExplorerService.getMultiCompanyTrends({
-        startDate: startDateParam,
-        endDate: endDateParam,
-        companies,
-        eventTypes: []
-      });
-      
-      // Transform data for multi-line chart
-      const transformedData = transformChartData(response.data || []);
-      setState(prev => ({ 
-        ...prev, 
-        chartData: transformedData, 
-        loading: false 
-      }));
-    } catch (error) {
-      console.error('Failed to fetch chart data:', error);
-      setState(prev => ({ 
-        ...prev, 
-        chartData: [], 
-        loading: false, 
-        error: 'Failed to fetch chart data' 
-      }));
-    }
-  }, [startDate, endDate, companies]);
-
-  // Fetch companies for chart
-  const fetchCompanies = useCallback(async () => {
-    try {
-      const response = await eventExplorerService.getCompanies();
-      setState(prev => ({ 
-        ...prev, 
-        companies: response.data || [] 
-      }));
-    } catch (error) {
-      console.error('Failed to fetch companies:', error);
-      setState(prev => ({ 
-        ...prev, 
-        error: 'Failed to fetch companies' 
-      }));
-    }
-  }, []);
+  // Fetch companies
+  const {
+    data: companiesResponse,
+    isLoading: companiesLoading,
+    error: companiesError,
+  } = useQuery({
+    queryKey: buildQueryKey(QUERY_KEYS.COMPANIES),
+    queryFn: () => eventExplorerService.getCompanies(),
+  });
 
   // Transform API data for multi-line chart
   const transformChartData = (apiData: Array<{ timestamp: string; [key: string]: number | string }>) => {
     // The API now returns data with company names as keys directly
     // Each item has: { timestamp: "2025-06-01", "Assembly": 45, "Facebook": 14, ... }
     
-    // Sort by timestamp
-    return apiData.sort((a, b) => 
+    // Create a copy of the array before sorting to avoid mutating the original
+    return [...apiData].sort((a, b) => 
       new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
     );
   };
 
   // Transform data for pie chart
-  const transformPieChartData = useCallback((apiData: Array<{ timestamp: string; [key: string]: number | string }>, selectedCompanies: string[]) => {
+  const transformPieChartData = (apiData: Array<{ timestamp: string; [key: string]: number | string }>, selectedCompanies: string[]) => {
     if (!apiData || apiData.length === 0) return [];
     
     // Calculate total events per company across all time periods
@@ -107,34 +80,29 @@ export const useChartData = ({ startDate, endDate, companies }: ChartDataHookPro
       name,
       value: companyTotals[name] || 0,
     }));
-  }, []);
+  };
 
-  // Fetch chart data when filters change
-  useEffect(() => {
-    fetchChartData();
-  }, [fetchChartData]);
-
-  // Fetch companies on initial load
-  useEffect(() => {
-    fetchCompanies();
-  }, [fetchCompanies]);
+  const chartData = useMemo(() => 
+    transformChartData(chartDataResponse?.data || []), 
+    [chartDataResponse?.data]
+  );
 
   // Memoized pie chart data
   const pieChartData = useMemo(() => 
-    transformPieChartData(state.chartData, companies), 
-    [state.chartData, companies, transformPieChartData]
+    transformPieChartData(chartData, companies), 
+    [chartData, companies]
   );
 
-  // Define colors for different companies
-  const companyColors = [
-    '#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#ff0000', 
-    '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'
-  ];
+  const error = chartError || companiesError;
+  const errorMessage = formatQueryError(error, ERROR_MESSAGES.CHART_DATA);
 
   return {
-    ...state,
+    chartData,
+    companies: companiesResponse?.data || [],
+    loading: chartLoading || companiesLoading,
+    error: errorMessage,
     pieChartData,
-    companyColors,
-    refetch: fetchChartData,
+    companyColors: CHART_CONFIG.COMPANY_COLORS,
+    refetch: refetchChartData,
   };
 };
